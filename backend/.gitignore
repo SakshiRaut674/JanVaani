@@ -1,0 +1,40 @@
+# Ignore Python cache and bytecode files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore environment files
+.env
+
+# Ignore Heroku Procfile logs or temp files
+*.log
+*.tmp
+
+# Ignore VSCode settings (optional)
+.vscode/
+
+# Ignore virtual environment folders (if any)
+venv/
+env/
+.venv/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore testing artifacts
+api_testing_files/
+
+# Ignore PDFs or personal files
+*.pdf
+
+# Ignore coverage reports (if you're using pytest or similar)
+htmlcov/
+.coverage
+.coverage.*
+
+# Ignore compiled files
+*.so
+
+# Ignore Jupyter Notebook checkpoints (if any)
+.ipynb_checkpoints/

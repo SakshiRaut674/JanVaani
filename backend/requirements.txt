@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+motor
+python-dotenv
+beanie
+pydantic
+redis
+PyJWT
+twilio
+python-jose
+bcrypt
+python-multipart
+pymongo
+pydantic_settings
+cloudinary

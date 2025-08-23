@@ -36,14 +36,14 @@ def serialize_document(doc):
 
 async def update_profile(
     profile_data: ProfileUpdateModel,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict
 ):
     # Get user ID from current authenticated user
     user_id = current_user["_id"]
     db = get_db()
     
     # Create update dictionary with only provided fields
-    update_data = {k: v for k, v in profile_data.dict(exclude_unset=True).items() if v is not None}
+    update_data = {k: v for k, v in profile_data.model_dump(exclude_unset=True).items() if v is not None}
     
     # If no fields to update, return early
     if not update_data:
@@ -87,7 +87,7 @@ async def update_profile(
             detail=f"Failed to update profile: {str(e)}"
         )
 # Send user details
-async def send_user_details(current_user: dict = Depends(get_current_user)):
+async def send_user_details(current_user: dict):
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
@@ -98,9 +98,11 @@ async def send_user_details(current_user: dict = Depends(get_current_user)):
                 "verified": current_user.get("verified", False),
                 "name": current_user.get("name"),
                 "email": current_user.get("email"),
-                "age": current_user.get("age")
+                "age": current_user.get("age"),
+                "gender": current_user.get("gender"),
+                "location": current_user.get("location")
             }
-        },
+        }
     )
 
 

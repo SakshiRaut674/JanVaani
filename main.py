@@ -14,6 +14,8 @@ from app.routes.user_routes import router as user_router
 from app.routes.grievance_routes import router as grievance_router  # New import
 from app.routes.grievance_admin_routes import router as grievance_admin_router  # Admin routes for AI Agent
 from app.routes.debug_routes import router as debug_router  # Debug routes
+from app.routes.revenue_routes import router as revenue_router  # Revenue management
+from app.routes.payment_routes import router as payment_router  # Payment processing
 load_dotenv()
 
 app = FastAPI(
@@ -66,12 +68,20 @@ async def shutdown():
     except Exception as e:
         print("Error closing Redis:", e)
 
-# Register routes
+# Register routes with /api prefix (for compatibility)
 app.include_router(auth_router, prefix="/api/auth")
 app.include_router(user_router, prefix="/api/users")
 app.include_router(grievance_router, prefix="/api/grievances")  # User grievance routes
 app.include_router(grievance_admin_router, prefix="/api/grievances")  # Admin grievance routes for AI Agent
 app.include_router(debug_router, prefix="/api/debug")  # Debug routes
+app.include_router(revenue_router, prefix="/api/revenue")  # Revenue with /api prefix
+app.include_router(payment_router, prefix="/api/payments")  # Payments with /api prefix
+
+# Register routes without /api prefix (for frontend compatibility)
+app.include_router(user_router, prefix="/users", tags=["Users (Direct)"])
+app.include_router(grievance_router, prefix="/grievances", tags=["Grievances (Direct)"])
+app.include_router(revenue_router, prefix="/revenue", tags=["Revenue (Direct)"])
+app.include_router(payment_router, prefix="/payments", tags=["Payments (Direct)"])
 
 # Error handler
 @app.middleware("http")

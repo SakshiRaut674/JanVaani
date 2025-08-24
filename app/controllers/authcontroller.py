@@ -42,15 +42,22 @@ async def resend_otp(mobile: str):
 
 
 async def verify_otp(mobile: str, otp: str):
+    from app.config import settings
+    
     users_collection = get_users_collection()
     redis_key = f"otp:{mobile}"
     stored_otp = await redis_client.get(redis_key)  # ✅ await the coroutine
-    print(stored_otp)
+    print(f"Stored OTP: {stored_otp}, Provided OTP: {otp}")
 
-    if stored_otp is None or stored_otp != otp:
+    # Development mode OTP bypass
+    if settings.development_mode and otp == settings.dev_otp:
+        print(f"🚀 DEVELOPMENT MODE: Using dev OTP {settings.dev_otp}")
+        # Don't delete the Redis key in dev mode so it can be reused
+    elif stored_otp is None or stored_otp != otp:
         raise HTTPException(status_code=401, detail="Invalid or expired OTP")
-
-    await redis_client.delete(redis_key)  # ✅ await the delete too
+    else:
+        # Valid OTP in production mode
+        await redis_client.delete(redis_key)  # ✅ await the delete too
 
     user = await users_collection.find_one({"mobile": mobile})
     if user:
@@ -78,5 +85,14 @@ async def verify_otp(mobile: str, otp: str):
         "user": {
             "_id": str(user["_id"]),
             "mobile": user["mobile"],
+            "verified": user.get("verified", False),
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "age": user.get("age"),
+            "gender": user.get("gender"),
+            "location": user.get("location"),
+            "city": user.get("city"),
+            "address": user.get("address"),
+            "isEmailVerified": user.get("isEmailVerified", False)
         }
     }

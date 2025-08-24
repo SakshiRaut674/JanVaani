@@ -20,6 +20,7 @@ class ProfileUpdateModel(BaseModel):
     gender: Optional[str] = None
     location: Optional[str] = None
     profile_photo: Optional[str] = None
+    isEmailVerified: Optional[bool] = None
 
 # Helper function to make MongoDB documents JSON serializable
 def serialize_document(doc):

@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     cloudinary_cloud_name: str
     cloudinary_api_key: str
     cloudinary_api_secret: str
+    
+    # Development mode settings
+    development_mode: bool = False
+    dev_otp: str = "123456"
 
     class Config:
         env_file = ".env"

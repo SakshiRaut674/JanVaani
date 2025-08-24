@@ -24,7 +24,7 @@ def serialize_document(doc):
 @router.put("/debug-update-profile")
 async def debug_update_profile(
     profile_data: Dict[str, Any] = Body(...),
-    mobile: str = "+918349896755"  # Debug with known mobile
+    mobile: str = "8349896755"  # Default mobile for testing
 ):
     try:
         db = get_db()

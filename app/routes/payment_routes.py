@@ -47,9 +47,34 @@ async def create_razorpay_order(
         # Create real Razorpay order
         razorpay_order = razorpay_client.order.create(data=razorpay_order_data)
         
+        # Create payment record in our database
+        from app.controllers.paymentController import create_payment_record
+        from app.models.payment_model import PaymentCreateModel
+        
+        payment_create = PaymentCreateModel(
+            service_type=order_data.get("metadata", {}).get("service_type", "other"),
+            service_id=order_data.get("metadata", {}).get("service_id", "unknown"),
+            amount=amount / 100,  # Store in rupees
+            payment_method="online",
+            razorpay_order_id=razorpay_order["id"],
+            description=order_data.get("description", "Service payment"),
+            metadata=order_data.get("metadata", {})
+        )
+        
+        payment_response = await create_payment_record(payment_create, current_user)
+        
+        # Parse payment response to get payment_id
+        if hasattr(payment_response.body, 'decode'):
+            import json
+            payment_data = json.loads(payment_response.body.decode())
+            payment_id = payment_data["payment"]["payment_id"]
+        else:
+            payment_id = payment_response.body["payment"]["payment_id"]
+        
         return {
             "success": True,
             "order": razorpay_order,
+            "payment_id": payment_id,
             "key_id": RAZORPAY_KEY_ID
         }
         

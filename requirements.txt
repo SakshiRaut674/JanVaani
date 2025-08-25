@@ -13,3 +13,7 @@ python-multipart
 pymongo
 pydantic_settings
 cloudinary
+httpx
+google-api-python-client
+google-generativeai
+SpeechRecognition

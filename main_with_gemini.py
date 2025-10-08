@@ -21,6 +21,10 @@ from app.routes.auth_routes import router as auth_router
 from app.routes.user_routes import router as user_router
 from app.routes.grievance_routes import router as grievance_router  # New import
 from app.routes.grievance_admin_routes import router as grievance_admin_router  # Admin routes for AI Agent
+from app.routes.debug_routes import router as debug_router  # Debug routes
+from app.routes.revenue_routes import router as revenue_router  # Revenue management
+from app.routes.payment_routes import router as payment_router  # Payment processing
+from app.routes.certificate_routes import router as certificate_router  # Certificate management
 
 load_dotenv()
 

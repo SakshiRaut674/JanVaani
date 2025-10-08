@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 
 from app.database.database import init_db
 from app.utils.redis_client import connect_redis, redis_client
+from app.services.gemini_service import gemini_service
+from app.services.voice_service import voice_service
 from app.routes.auth_routes import router as auth_router
 from app.routes.user_routes import router as user_router
 from app.routes.grievance_routes import router as grievance_router  # New import
@@ -17,12 +19,13 @@ from app.routes.debug_routes import router as debug_router  # Debug routes
 from app.routes.revenue_routes import router as revenue_router  # Revenue management
 from app.routes.payment_routes import router as payment_router  # Payment processing
 from app.routes.certificate_routes import router as certificate_router  # Certificate management
+from app.routes.voice_routes import router as voice_router  # Voice assistant routes
 load_dotenv()
 
 app = FastAPI(
-    title="Municipal Services API",
-    description="API for Municipal Services including Authentication, User Management, and Grievance System",
-    version="1.0.0"
+    title="Municipal Services API with Voice Assistant",
+    description="API for Municipal Services including Authentication, User Management, Grievance System, and AI-Powered Voice Assistant",
+    version="1.1.0"
 )
 
 # Enable CORS
@@ -58,6 +61,16 @@ async def startup():
         print("Redis connection successful !")
     except Exception as err:
         print("Redis connection failed", err)
+    
+    # Initialize AI and Voice Services
+    print("Initializing AI and Voice Services...")
+    try:
+        await gemini_service.initialize()
+        await voice_service.initialize()
+        print("✅ AI and Voice Services initialized successfully")
+    except Exception as e:
+        print(f"⚠️ Warning: AI/Voice services initialization failed: {e}")
+        print("Voice assistant features will be limited")
 
 # Graceful shutdown
 @app.on_event("shutdown")
@@ -78,6 +91,7 @@ app.include_router(debug_router, prefix="/api/debug")  # Debug routes
 app.include_router(revenue_router, prefix="/api/revenue")  # Revenue with /api prefix
 app.include_router(payment_router, prefix="/api/payments")  # Payments with /api prefix
 app.include_router(certificate_router, prefix="/api/certificates")  # Certificates with /api prefix
+app.include_router(voice_router, prefix="/api/voice", tags=["Voice Assistant"])  # Voice assistant routes
 
 # Register routes without /api prefix (for frontend compatibility)
 app.include_router(user_router, prefix="/users", tags=["Users (Direct)"])
@@ -85,6 +99,7 @@ app.include_router(grievance_router, prefix="/grievances", tags=["Grievances (Di
 app.include_router(revenue_router, prefix="/revenue", tags=["Revenue (Direct)"])
 app.include_router(payment_router, prefix="/payments", tags=["Payments (Direct)"])
 app.include_router(certificate_router, prefix="/certificates", tags=["Certificates (Direct)"])
+app.include_router(voice_router, prefix="/voice", tags=["Voice Assistant (Direct)"])  # Direct voice routes
 
 # Error handler
 @app.middleware("http")
